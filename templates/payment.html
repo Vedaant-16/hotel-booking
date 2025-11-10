@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Payment - Hotel Booking System{% endblock %}
+
+{% block content %}
+<div class="payment-container">
+    <h2>Payment</h2>
+    
+    <div class="booking-summary">
+        <h3>Booking Summary</h3>
+        <div class="summary-details">
+            <p><strong>Booking ID:</strong> {{ booking.booking_id }}</p>
+            <p><strong>Room:</strong> {{ booking.room_number }} ({{ booking.room_type }})</p>
+            <p><strong>Guest:</strong> {{ booking.first_name }} {{ booking.last_name }}</p>
+            <p><strong>Check-in:</strong> {{ booking.check_in_date }}</p>
+            <p><strong>Check-out:</strong> {{ booking.check_out_date }}</p>
+            <p><strong>Total Amount:</strong> ${{ "%.2f"|format(booking.total_amount) }}</p>
+        </div>
+    </div>
+    
+    <form method="POST" action="{{ url_for('payment', booking_id=booking.booking_id) }}" class="payment-form">
+        <h3>Payment Method</h3>
+        <div class="form-group">
+            <label>
+                <input type="radio" name="payment_method" value="credit_card" required>
+                Credit Card
+            </label>
+        </div>
+        <div class="form-group">
+            <label>
+                <input type="radio" name="payment_method" value="debit_card" required>
+                Debit Card
+            </label>
+        </div>
+        <div class="form-group">
+            <label>
+                <input type="radio" name="payment_method" value="online_transfer" required>
+                Online Transfer
+            </label>
+        </div>
+        <div class="form-group">
+            <label>
+                <input type="radio" name="payment_method" value="cash" required>
+                Cash (Pay at Hotel)
+            </label>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Complete Payment</button>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
+

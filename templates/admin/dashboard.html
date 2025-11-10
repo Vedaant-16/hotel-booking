@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Hotel Booking System{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <h1>Admin Dashboard</h1>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Rooms</h3>
+            <p class="stat-number">{{ total_rooms }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Available Rooms</h3>
+            <p class="stat-number">{{ available_rooms }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Bookings</h3>
+            <p class="stat-number">{{ total_bookings }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Pending Bookings</h3>
+            <p class="stat-number">{{ pending_bookings }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Revenue</h3>
+            <p class="stat-number">${{ "%.2f"|format(total_revenue) }}</p>
+        </div>
+    </div>
+    
+    <div class="admin-links">
+        <a href="{{ url_for('admin_rooms') }}" class="admin-link-card">
+            <h3>Manage Rooms</h3>
+            <p>Add, edit, or delete rooms</p>
+        </a>
+        <a href="{{ url_for('admin_bookings') }}" class="admin-link-card">
+            <h3>Manage Bookings</h3>
+            <p>View and update bookings</p>
+        </a>
+        <a href="{{ url_for('admin_staff') }}" class="admin-link-card">
+            <h3>Manage Staff</h3>
+            <p>Add or remove staff members</p>
+        </a>
+    </div>
+    
+    <div class="recent-bookings">
+        <h2>Recent Bookings</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Room</th>
+                    <th>Customer</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in recent_bookings %}
+                <tr>
+                    <td>#{{ booking.booking_id }}</td>
+                    <td>{{ booking.room_number }}</td>
+                    <td>{{ booking.first_name }} {{ booking.last_name }}</td>
+                    <td>{{ booking.check_in_date }}</td>
+                    <td>{{ booking.check_out_date }}</td>
+                    <td>${{ "%.2f"|format(booking.total_amount) }}</td>
+                    <td><span class="status-badge status-{{ booking.status }}">{{ booking.status.replace('_', ' ').title() }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+

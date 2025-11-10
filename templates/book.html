@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Book Room - Hotel Booking System{% endblock %}
+
+{% block content %}
+<div class="booking-container">
+    <h2>Book a Room</h2>
+    
+    {% if room %}
+    <div class="room-summary">
+        <h3>Room Details</h3>
+        <p><strong>Room Number:</strong> {{ room.room_number }}</p>
+        <p><strong>Room Type:</strong> {{ room.room_type }}</p>
+        <p><strong>Price per Night:</strong> ${{ "%.2f"|format(room.price_per_night) }}</p>
+        <p><strong>Capacity:</strong> {{ room.capacity }} guests</p>
+    </div>
+    {% endif %}
+    
+    <form method="POST" action="{{ url_for('book') }}" class="booking-form">
+        <input type="hidden" name="room_id" value="{{ room.room_id if room else '' }}">
+        
+        <h3>Customer Information</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="first_name">First Name *</label>
+                <input type="text" id="first_name" name="first_name" required>
+            </div>
+            <div class="form-group">
+                <label for="last_name">Last Name *</label>
+                <input type="text" id="last_name" name="last_name" required>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone *</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+        </div>
+        
+        <h3>Booking Details</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="check_in">Check-in Date *</label>
+                <input type="date" id="check_in" name="check_in" value="{{ check_in }}" required>
+            </div>
+            <div class="form-group">
+                <label for="check_out">Check-out Date *</label>
+                <input type="date" id="check_out" name="check_out" value="{{ check_out }}" required>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="number_of_guests">Number of Guests *</label>
+            <input type="number" id="number_of_guests" name="number_of_guests" min="1" max="{{ room.capacity if room else 10 }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="special_requests">Special Requests</label>
+            <textarea id="special_requests" name="special_requests" rows="3"></textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Continue to Payment</button>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
+

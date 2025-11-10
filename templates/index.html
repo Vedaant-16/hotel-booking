@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Hotel Booking System{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Welcome to Our Hotel</h1>
+    <p>Book your perfect stay with us</p>
+</div>
+
+<div class="availability-check">
+    <h2>Check Availability</h2>
+    <form id="availabilityForm" class="form-inline">
+        <div class="form-group">
+            <label for="check_in">Check-in Date:</label>
+            <input type="date" id="check_in" name="check_in" required>
+        </div>
+        <div class="form-group">
+            <label for="check_out">Check-out Date:</label>
+            <input type="date" id="check_out" name="check_out" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Check Availability</button>
+    </form>
+</div>
+
+<div id="availableRooms" class="rooms-section" style="display: none;">
+    <h2>Available Rooms</h2>
+    <div id="roomsList" class="rooms-grid"></div>
+</div>
+
+<div class="rooms-section">
+    <h2>Our Rooms</h2>
+    <div class="rooms-grid">
+        {% for room in rooms %}
+        <div class="room-card">
+            <div class="room-header">
+                <h3>Room {{ room.room_number }}</h3>
+                <span class="room-type">{{ room.room_type }}</span>
+            </div>
+            <div class="room-details">
+                <p><strong>Price:</strong> ${{ "%.2f"|format(room.price_per_night) }}/night</p>
+                <p><strong>Capacity:</strong> {{ room.capacity }} guests</p>
+                {% if room.amenities %}
+                <p><strong>Amenities:</strong> {{ room.amenities }}</p>
+                {% endif %}
+                <p class="room-status status-{{ room.status }}">{{ room.status|title }}</p>
+            </div>
+            <a href="{{ url_for('book', room_id=room.room_id) }}" class="btn btn-primary">Book Now</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('availabilityForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const response = await fetch('/check_availability', {
+        method: 'POST',
+        body: formData
+    });
+    
+    const data = await response.json();
+    
+    if (data.error) {
+        alert(data.error);
+        return;
+    }
+    
+    const roomsList = document.getElementById('roomsList');
+    const availableRooms = document.getElementById('availableRooms');
+    
+    if (data.rooms && data.rooms.length > 0) {
+        roomsList.innerHTML = data.rooms.map(room => `
+            <div class="room-card">
+                <div class="room-header">
+                    <h3>Room ${room.room_number}</h3>
+                    <span class="room-type">${room.room_type}</span>
+                </div>
+                <div class="room-details">
+                    <p><strong>Price:</strong> $${room.price_per_night}/night</p>
+                    <p><strong>Total:</strong> $${room.total_amount.toFixed(2)}</p>
+                    <p><strong>Capacity:</strong> ${room.capacity} guests</p>
+                    ${room.amenities ? `<p><strong>Amenities:</strong> ${room.amenities}</p>` : ''}
+                </div>
+                <a href="/book?room_id=${room.room_id}&check_in=${formData.get('check_in')}&check_out=${formData.get('check_out')}" 
+                   class="btn btn-primary">Book Now</a>
+            </div>
+        `).join('');
+        availableRooms.style.display = 'block';
+    } else {
+        roomsList.innerHTML = '<p>No rooms available for the selected dates.</p>';
+        availableRooms.style.display = 'block';
+    }
+});
+</script>
+{% endblock %}
+

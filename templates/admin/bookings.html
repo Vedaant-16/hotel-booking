@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Bookings - Hotel Booking System{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <h1>Manage Bookings</h1>
+    
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Booking ID</th>
+                <th>Room</th>
+                <th>Customer</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Check-in</th>
+                <th>Check-out</th>
+                <th>Guests</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr>
+                <td>#{{ booking.booking_id }}</td>
+                <td>{{ booking.room_number }} ({{ booking.room_type }})</td>
+                <td>{{ booking.first_name }} {{ booking.last_name }}</td>
+                <td>{{ booking.email }}</td>
+                <td>{{ booking.phone }}</td>
+                <td>{{ booking.check_in_date }}</td>
+                <td>{{ booking.check_out_date }}</td>
+                <td>{{ booking.number_of_guests }}</td>
+                <td>${{ "%.2f"|format(booking.total_amount) }}</td>
+                <td><span class="status-badge status-{{ booking.status }}">{{ booking.status.replace('_', ' ').title() }}</span></td>
+                <td>
+                    <form method="POST" action="{{ url_for('update_booking_status', booking_id=booking.booking_id) }}" style="display: inline;">
+                        <select name="status" onchange="this.form.submit()">
+                            <option value="pending" {% if booking.status == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="confirmed" {% if booking.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                            <option value="checked_in" {% if booking.status == 'checked_in' %}selected{% endif %}>Checked In</option>
+                            <option value="checked_out" {% if booking.status == 'checked_out' %}selected{% endif %}>Checked Out</option>
+                            <option value="cancelled" {% if booking.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
